@@ -154,7 +154,7 @@ class NetworkRequestImpl implements NetworkRequest {
           .timeout(Duration(seconds: timeOut), onTimeout: () {
         throw TimeoutException('Request timed out');
       });
-      ;
+      
     } catch (error) {
       throw TimeoutException('Error from server: $error');
     }

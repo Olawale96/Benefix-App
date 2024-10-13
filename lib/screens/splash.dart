@@ -1,5 +1,10 @@
+import 'dart:developer';
+
 import 'package:benefixs/core/function_files.dart';
-import 'package:benefixs/screens/onboarding/onboarding.dart';
+import 'package:benefixs/core/local_db.dart';
+import 'package:benefixs/screens/authentication/signUp.dart';
+import 'package:benefixs/screens/authentication/signin.dart';
+import 'package:benefixs/screens/onboarding/onboarding.dart'; // Replace with your actual screen import
 import 'package:flutter/material.dart';
 
 class Splash extends StatefulWidget {
@@ -11,19 +16,41 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> with TickerProviderStateMixin {
   late AnimationController _controller;
+  String? _token;
+
   @override
   void initState() {
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 5));
+    super.initState();
+
+    _initialize();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    );
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _controller.forward();
     });
+  }
+
+  Future<void> _initialize() async {
+    _token = await LocalDB.getToken();
+    log('stored user token: $_token');
+
     Future.delayed(const Duration(seconds: 7), () {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const Onboarding()));
+      if (_token == null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Onboarding()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SignIn()),
+        );
+      }
     });
-    // TODO: implement initState
-    super.initState();
   }
 
   @override

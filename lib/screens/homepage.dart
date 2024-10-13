@@ -23,6 +23,12 @@ class _HomePageState extends State<HomePage> {
       throw "Could not launch $whatsappGroupUrl";
     }
   }
+     void getCode (String url) async {
+    final Uri whatsappGroupUrl = Uri.parse(url);
+    if (!await launchUrl(whatsappGroupUrl)) {
+      throw "Could not launch $whatsappGroupUrl";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +98,21 @@ class _HomePageState extends State<HomePage> {
                 borderColor: BenefixColors.gray,
               ),
             ),
+                        Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30.0.w, vertical: 10.h),
+              child: NavButton(
+                label: 'Get Code',
+                height: 55.h,
+                labelColor: BenefixColors.textColor,
+                radius: 5.r,
+                buttonColor: Colors.white,
+                fontSize: 18.sp,
+                borderColor: BenefixColors.gray,
+              ),
+            ).appTouchable(() {
+            openWhatsAppGroup(
+                'https://wa.link/fcaozm');
+          }),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 30.0.w, vertical: 10.h),
               child: NavButton(

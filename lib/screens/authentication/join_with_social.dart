@@ -2,9 +2,11 @@ import 'package:benefixs/core/Sharedwidget/Reusablewidget/customtext.dart';
 import 'package:benefixs/core/extension/extension.dart';
 import 'package:benefixs/core/theme/colors.dart';
 import 'package:benefixs/core/utils/extension/widget_extensions.dart';
+import 'package:benefixs/provider/general.dart';
 import 'package:benefixs/screens/authentication/signin.dart';
 import 'package:benefixs/screens/homepage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -14,20 +16,26 @@ class Social {
   Social({required this.image, required this.label});
 }
 
-class JoinWithSocialMedia extends StatefulWidget {
+class JoinWithSocialMedia extends ConsumerStatefulWidget {
   const JoinWithSocialMedia({super.key});
 
   @override
-  State<JoinWithSocialMedia> createState() => _JoinWithSocialMediaState();
+  ConsumerState<JoinWithSocialMedia> createState() => _JoinWithSocialMediaState();
 }
 
-class _JoinWithSocialMediaState extends State<JoinWithSocialMedia> {
+class _JoinWithSocialMediaState extends ConsumerState<JoinWithSocialMedia> {
   List<Social> social = [
     Social(image: 'images/whatsapp.png', label: 'Join WhatsApp'),
     Social(image: 'images/whatsapp.png', label: 'Join WhatsApp Channel'),
     Social(image: 'images/telegram.png', label: 'Telegram'),
   ];
   void openWhatsAppGroup(String url) async {
+    final Uri whatsappGroupUrl = Uri.parse(url);
+    if (!await launchUrl(whatsappGroupUrl)) {
+      throw "Could not launch $whatsappGroupUrl";
+    }
+  }
+  void openWeb(String url) async {
     final Uri whatsappGroupUrl = Uri.parse(url);
     if (!await launchUrl(whatsappGroupUrl)) {
       throw "Could not launch $whatsappGroupUrl";
@@ -43,6 +51,7 @@ class _JoinWithSocialMediaState extends State<JoinWithSocialMedia> {
 
   @override
   Widget build(BuildContext context) {
+    final IsWebOpen = ref.watch(goToWebProvider);
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
@@ -81,38 +90,63 @@ class _JoinWithSocialMediaState extends State<JoinWithSocialMedia> {
                     textColor: Colors.white,
                   ),
                   20.0.h.spacingH,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(social.length, (index) {
-                      return Padding(
-                        padding: EdgeInsets.only(right: 25.0.sp),
-                        child: Column(
-                          children: [
-                            Image.asset(social[index].image!),
-                            7.0.h.spacingH,
-                            CustomText(
-                              text: social[index].label,
-                              fontSize: 8.sp,
-                              
-                              fontWeight: FontWeight.w300,
-                              textColor: BenefixColors.white,
-                            )
-                          ],
-                        ).appTouchable(() {
-                          switch (index) {
-                            case 0:
-                              openWhatsAppGroup(
-                                  'https://chat.whatsapp.com/LgFnW99OmEKKY6shcTsxUS');
-                            case 1:
-                              openWhatsAppGroup(
-                                  'https://chat.whatsapp.com/F7QqkqkXV318SdQpwv6DuP');
-                            case 2:
-                              openTelegram('benefixofficial001');
-                          }
+                IsWebOpen?  Column(
+                  children: [
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(social.length, (index) {
+                          return Padding(
+                            padding: EdgeInsets.only(right: 25.0.sp),
+                            child: Column(
+                              children: [
+                                Image.asset(social[index].image!),
+                                7.0.h.spacingH,
+                                CustomText(
+                                  text: social[index].label,
+                                  fontSize: 8.sp,
+                                  
+                                  fontWeight: FontWeight.w300,
+                                  textColor: BenefixColors.white,
+                                )
+                              ],
+                            ).appTouchable(() {
+                              switch (index) {
+                                case 0:
+                                  openWhatsAppGroup(
+                                      'https://chat.whatsapp.com/LgFnW99OmEKKY6shcTsxUS');
+                                case 1:
+                                  openWhatsAppGroup(
+                                      'https://chat.whatsapp.com/F7QqkqkXV318SdQpwv6DuP');
+                                case 2:
+                                  openTelegram('benefixofficial001');
+                              }
+                            }),
+                          );
                         }),
-                      );
-                    }),
-                  ),
+                      ),
+                                  Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: NavButton(
+                label: 'Click here to registration again',
+                radius: 5.r,
+              ).appTouchable(() {
+                openWeb('https://benefix.tech/signup?ref=DeraMedia');
+                ref.read(goToWebProvider.notifier).state=true;
+
+              }),
+            ) ,
+                  ],
+                ) :            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: NavButton(
+                label: 'Click Here to Get started',
+                radius: 5.r,
+              ).appTouchable(() {
+                openWeb('https://benefix.tech/signup?ref=DeraMedia');
+                ref.read(goToWebProvider.notifier).state=true;
+
+              }),
+            ) ,
                 ],
               ),
             ),
